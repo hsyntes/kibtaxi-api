@@ -40,7 +40,6 @@ app.use(xssClean());
 
 // * Server
 const server = http.createServer(app);
-
 server.listen(process.env.PORT, () =>
   console.log(`Server is runnnig on PORT: ${process.env.PORT}`)
 );

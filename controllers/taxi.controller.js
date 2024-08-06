@@ -3,8 +3,9 @@ const sharp = require("sharp");
 const AppError = require("../errors/AppError");
 const AWS = require("../aws.config");
 const Response = require("../utils/Response");
+const { promisify } = require("util");
 
-// * GET ALL
+// * GET all documents
 exports.getTaxis = async function (req, res, next) {
   try {
     const taxis = await Taxi.find();
@@ -15,7 +16,7 @@ exports.getTaxis = async function (req, res, next) {
   }
 };
 
-// * GET One
+// * GET one document by id
 exports.getTaxi = async function (req, res, next) {
   try {
     const taxi = await Taxi.findById(req.params.id);
@@ -25,7 +26,7 @@ exports.getTaxi = async function (req, res, next) {
   }
 };
 
-// * CREATE
+// * CREATE a document
 exports.createTaxi = async function (req, res, next) {
   try {
     const {
@@ -63,7 +64,7 @@ exports.createTaxi = async function (req, res, next) {
   }
 };
 
-// * UPDATE
+// * Update document by id
 exports.updateTaxi = async function (req, res, next) {
   try {
     const {
@@ -105,7 +106,7 @@ exports.updateTaxi = async function (req, res, next) {
   }
 };
 
-// * UPLOAD
+// * Upload profile picture
 exports.uploadTaxiProfile = async function (req, res, next) {
   try {
     if (!req.params.id)
@@ -157,6 +158,66 @@ exports.uploadTaxiProfile = async function (req, res, next) {
         { taxi }
       );
     });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// * Upload photos
+exports.uploadTaxiPhotos = async function (req, res, next) {
+  try {
+    if (!req.files || req.files.length === 0)
+      return next(
+        new AppError(403, "fail", "Please select at least one image.")
+      );
+
+    const taxi = await Taxi.findById(req.params.id);
+
+    const S3 = new AWS.S3();
+    const upload = promisify(S3.upload.bind(S3));
+
+    const taxi_photos = [];
+
+    await Promise.all(
+      req.files.map(async function (file, index) {
+        const taxi_photo = await sharp(file.buffer)
+          .resize({
+            width: 1080,
+            height: 1350,
+            fit: "cover",
+          })
+          .toFormat("jpg")
+          .jpeg({ quality: 100 })
+          .toBuffer();
+
+        const params = {
+          Bucket: process.env.AWS_BUCKET,
+          Key: `taxis/${taxi._id}/photos/${index}.jpg`,
+          Body: taxi_photo,
+        };
+
+        try {
+          const data = await upload(params);
+          const url = data.Location;
+
+          taxi_photos.push(url);
+        } catch (e) {
+          return next(e);
+        }
+      })
+    );
+
+    taxi.taxi_photos = taxi_photos;
+    await taxi.save();
+
+    Response.send(
+      res,
+      201,
+      "success",
+      "The photos has been uploaded successfully!",
+      undefined,
+      { taxi }
+    );
   } catch (e) {
     next(e);
   }
