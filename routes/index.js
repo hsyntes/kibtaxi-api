@@ -1,6 +1,6 @@
 const express = require("express");
-const Response = require("../utils/Response");
 const router = express.Router();
+const Response = require("../utils/Response");
 
 // * API Health
 router.get("/", function (req, res, next) {

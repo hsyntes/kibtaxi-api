@@ -16,11 +16,15 @@ const {
 // * Endpoint(s)
 router.route("/").get(getTaxis).post(createTaxi);
 router.route("/:id").get(getTaxi).patch(updateTaxi).put(updateTaxi);
-router
-  .route("/:id/upload/profile")
-  .post(storage.single("profile_photo"), uploadTaxiProfile);
-router
-  .route("/:id/upload/photos")
-  .post(storage.array("taxi_photos", 8), uploadTaxiPhotos);
+router.post(
+  "/:id/upload/profile",
+  storage.single("profile_photo"),
+  uploadTaxiProfile
+);
+router.post(
+  "/:id/upload/photos",
+  storage.array("taxi_photos", 8),
+  uploadTaxiPhotos
+);
 
 module.exports = router;

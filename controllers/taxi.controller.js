@@ -1,9 +1,9 @@
 const Taxi = require("../models/Taxi");
 const sharp = require("sharp");
-const AppError = require("../errors/AppError");
 const AWS = require("../aws.config");
-const Response = require("../utils/Response");
 const { promisify } = require("util");
+const AppError = require("../errors/AppError");
+const Response = require("../utils/Response");
 
 // * GET all documents
 exports.getTaxis = async function (req, res, next) {
