@@ -5,10 +5,33 @@ const { promisify } = require("util");
 const AppError = require("../errors/AppError");
 const Response = require("../utils/Response");
 
-// * GET all documents
 exports.getTaxis = async function (req, res, next) {
   try {
-    const taxis = await Taxi.find();
+    const { lat, long } = req.query;
+
+    if (!lat || !long)
+      return next(
+        new AppError(
+          403,
+          "fail",
+          "Please specify valid latitude and longitude values to get taxis around your location."
+        )
+      );
+
+    const latitude = Number(lat);
+    const longitude = Number(long);
+
+    const taxis = await Taxi.find({
+      taxi_location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: 12500,
+        },
+      },
+    });
 
     Response.send(res, 200, "success", undefined, taxis.length, { taxis });
   } catch (e) {
@@ -33,6 +56,7 @@ exports.createTaxi = async function (req, res, next) {
       taxi_name,
       taxi_description,
       taxi_location,
+      taxi_city,
       taxi_phone,
       taxi_whatsapp,
       taxi_email,
@@ -44,6 +68,7 @@ exports.createTaxi = async function (req, res, next) {
       taxi_name,
       taxi_description,
       taxi_location,
+      taxi_city,
       taxi_phone,
       taxi_whatsapp,
       taxi_email,
@@ -72,6 +97,7 @@ exports.updateTaxi = async function (req, res, next) {
       taxi_profile,
       taxi_description,
       taxi_location,
+      taxi_city,
       taxi_phone,
       taxi_whatsapp,
       taxi_email,
@@ -85,6 +111,7 @@ exports.updateTaxi = async function (req, res, next) {
       taxi_profile,
       taxi_description,
       taxi_location,
+      taxi_city,
       taxi_phone,
       taxi_whatsapp,
       taxi_email,

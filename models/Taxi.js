@@ -24,15 +24,30 @@ const Schema = new mongoose.Schema(
       trim: true,
     },
 
-    taxi_location: {
+    taxi_city: {
       type: String,
-      required: [true, "The location where this taxi serves is required."],
+      required: [true, "The city taxi serves is required."],
       trim: true,
+    },
+
+    taxi_location: {
+      type: {
+        type: String,
+        enum: {
+          values: ["Point"],
+          message: "Invalid location point.",
+        },
+        required: [true, "The location point is required."],
+      },
+      coordinates: {
+        type: [Number],
+        required: [true, "Coordinates is required."],
+      },
     },
 
     taxi_phone: {
       type: String,
-      required: [true, "Taxi phone number of the taxi is required."],
+      required: [true, "Taxi phone number is required."],
       validate: [validator.isMobilePhone, "Invalid phone number."],
       unique: true,
       trim: true,
@@ -40,7 +55,9 @@ const Schema = new mongoose.Schema(
 
     taxi_whatsapp: {
       type: String,
+      required: [true, "Taxi whatsapp number is required."],
       validate: [validator.isMobilePhone, "Invalid phone number."],
+      unique: true,
       trim: true,
     },
 
@@ -80,6 +97,8 @@ const Schema = new mongoose.Schema(
     versionKey: false,
   }
 );
+
+Schema.index({ taxi_location: "2dsphere" });
 
 const Taxi = mongoose.model("Taxi", Schema);
 

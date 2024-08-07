@@ -26,16 +26,6 @@ const duplicateKeyError = (err) => {
 
   if (err.keyPattern.hasOwnProperty("taxi_email"))
     return new AppError(409, "fail", "This email is already in use.");
-
-  if (err.keyPattern.hasOwnProperty("taxi_website"))
-    return new AppError(409, "fail", "This taxi website is already in use.");
-
-  if (err.keyPattern.hasOwnProperty("taxi_instagram"))
-    return new AppError(
-      409,
-      "fail",
-      "This instagram account is already in use."
-    );
 };
 
 module.exports = function (err, req, res, next) {
