@@ -7,7 +7,7 @@ const Response = require("../utils/Response");
 
 exports.getTaxis = async function (req, res, next) {
   try {
-    const { lat, long } = req.query;
+    const { page, limit, lat, long } = req.query;
 
     if (!lat || !long)
       return next(
@@ -21,6 +21,7 @@ exports.getTaxis = async function (req, res, next) {
     const latitude = Number(lat);
     const longitude = Number(long);
 
+    const countTaxiDocuments = await Taxi.countDocuments();
     const taxis = await Taxi.find({
       taxi_location: {
         $near: {
@@ -31,9 +32,18 @@ exports.getTaxis = async function (req, res, next) {
           $maxDistance: 12500,
         },
       },
-    });
+    })
+      .skip((Number(page) - 1) * Number(limit))
+      .limit(Number(limit));
 
-    Response.send(res, 200, "success", undefined, taxis.length, { taxis });
+    const totalPages = Math.ceil(countTaxiDocuments / Number(limit));
+
+    Response.send(res, 200, "success", undefined, taxis.length, {
+      currentPage: Number(page),
+      countTaxiDocuments,
+      totalPages,
+      taxis,
+    });
   } catch (e) {
     next(e);
   }
