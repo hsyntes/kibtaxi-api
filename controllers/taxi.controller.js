@@ -5,6 +5,7 @@ const { promisify } = require("util");
 const AppError = require("../errors/AppError");
 const Response = require("../utils/Response");
 
+// * GET all documents
 exports.getTaxis = async function (req, res, next) {
   try {
     const { page, limit, lat, long } = req.query;
@@ -22,19 +23,28 @@ exports.getTaxis = async function (req, res, next) {
     const longitude = Number(long);
 
     const countTaxiDocuments = await Taxi.countDocuments();
-    const taxis = await Taxi.find({
-      taxi_location: {
-        $near: {
-          $geometry: {
+    const taxis = await Taxi.aggregate([
+      {
+        $geoNear: {
+          near: {
             type: "Point",
             coordinates: [longitude, latitude],
           },
-          $maxDistance: 12500,
+          distanceField: "distance",
+          maxDistance: 30000,
+          spherical: true,
         },
       },
-    })
-      .skip((Number(page) - 1) * Number(limit))
-      .limit(Number(limit));
+      {
+        $sample: { size: countTaxiDocuments },
+      },
+      {
+        $skip: (Number(page) - 1) * Number(limit),
+      },
+      {
+        $limit: Number(limit),
+      },
+    ]);
 
     const totalPages = Math.ceil(countTaxiDocuments / Number(limit));
 
@@ -44,6 +54,50 @@ exports.getTaxis = async function (req, res, next) {
       totalPages,
       taxis,
     });
+  } catch (e) {
+    next(e);
+  }
+};
+
+exports.getPopularTaxis = async function (req, res, next) {
+  try {
+    const { lat, long } = req.query;
+
+    if (!lat || !long)
+      return next(
+        new AppError(
+          403,
+          "fail",
+          "Please specify valid latitude and longitude values to get taxis around your location."
+        )
+      );
+
+    const latitude = Number(lat);
+    const longitude = Number(long);
+
+    const taxis = await Taxi.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          distanceField: "distance",
+          maxDistance: 30000,
+          spherical: true,
+        },
+      },
+      {
+        $sample: { size: 3 },
+      },
+      {
+        $sort: { taxi_popularity: -1 },
+      },
+    ]);
+
+    console.log("taxis: ", taxis);
+
+    Response.send(res, 200, "success", undefined, taxis.length, { taxis });
   } catch (e) {
     next(e);
   }
@@ -64,27 +118,30 @@ exports.createTaxi = async function (req, res, next) {
   try {
     const {
       taxi_name,
-      taxi_description,
+      taxi_username,
       taxi_location,
       taxi_city,
       taxi_phone,
       taxi_whatsapp,
-      taxi_email,
-      taxi_website,
-      taxi_instagram,
+      taxi_address,
+      taxi_popularity,
     } = req.body;
 
     const taxi = await Taxi.create({
       taxi_name,
-      taxi_description,
+      taxi_username,
       taxi_location,
       taxi_city,
-      taxi_phone,
+      taxi_phone: `+90${taxi_phone}`,
       taxi_whatsapp,
-      taxi_email,
-      taxi_website,
-      taxi_instagram,
+      taxi_address,
+      taxi_popularity,
     });
+
+    if (!taxi.taxi_whatsapp) {
+      taxi.taxi_whatsapp = taxi.taxi_phone;
+      await taxi.save({ validateBeforeSave: true });
+    }
 
     Response.send(
       res,
@@ -104,31 +161,34 @@ exports.updateTaxi = async function (req, res, next) {
   try {
     const {
       taxi_name,
+      taxi_username,
       taxi_profile,
-      taxi_description,
       taxi_location,
       taxi_city,
       taxi_phone,
       taxi_whatsapp,
-      taxi_email,
-      taxi_website,
-      taxi_instagram,
+      taxi_address,
       taxi_photos,
+      taxi_popularity,
     } = req.body;
 
     const taxi = await Taxi.findByIdAndUpdate(req.params.id, {
       taxi_name,
+      taxi_username,
       taxi_profile,
-      taxi_description,
       taxi_location,
       taxi_city,
       taxi_phone,
       taxi_whatsapp,
-      taxi_email,
-      taxi_website,
-      taxi_instagram,
+      taxi_address,
       taxi_photos,
+      taxi_popularity,
     });
+
+    if (!taxi.taxi_whatsapp) {
+      taxi.taxi_whatsapp = taxi.taxi_phone;
+      await taxi.save({ validateBeforeSave: true });
+    }
 
     Response.send(
       res,

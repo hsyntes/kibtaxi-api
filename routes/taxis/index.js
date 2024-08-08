@@ -7,6 +7,7 @@ const storage = multer({ storage: multer.memoryStorage() });
 const {
   getTaxis,
   getTaxi,
+  getPopularTaxis,
   updateTaxi,
   createTaxi,
   uploadTaxiProfile,
@@ -14,17 +15,23 @@ const {
 } = require("../../controllers/taxi.controller");
 
 // * Endpoint(s)
-router.route("/").get(getTaxis).post(createTaxi);
-router.route("/:id").get(getTaxi).patch(updateTaxi).put(updateTaxi);
+router.get("/", getTaxis);
+router.get("/id/:id", getTaxi);
+router.get("/popular", getPopularTaxis);
+router.post("/create", createTaxi);
+
 router.post(
-  "/:id/upload/profile",
+  "/upload/profile/:id",
   storage.single("profile_photo"),
   uploadTaxiProfile
 );
+
 router.post(
-  "/:id/upload/photos",
+  "/upload/photos/:id",
   storage.array("taxi_photos", 8),
   uploadTaxiPhotos
 );
+
+router.patch("/update/:id", updateTaxi);
 
 module.exports = router;

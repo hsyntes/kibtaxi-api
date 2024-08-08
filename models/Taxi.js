@@ -7,7 +7,16 @@ const Schema = new mongoose.Schema(
       type: String,
       required: [true, "Taxi name is required."],
       minlength: [3, "Taxi name cannot be shorter than 3 characters."],
-      maxlength: [16, "Taxi name cannot be longer than 16 characters."],
+      maxlength: [32, "Taxi name cannot be longer than 16 characters."],
+      unique: true,
+      trim: true,
+    },
+
+    taxi_username: {
+      type: String,
+      required: [true, "Taxi username is required."],
+      minlength: [3, "Taxi username cannot be shorter than 3 characters."],
+      maxlength: [24, "Taxi username cannot be longer than 12 characters."],
       unique: true,
       trim: true,
     },
@@ -15,12 +24,6 @@ const Schema = new mongoose.Schema(
     taxi_profile: {
       type: String,
       validate: [validator.isURL, "Invalid profile photo url."],
-      trim: true,
-    },
-
-    taxi_description: {
-      type: String,
-      maxlength: [255, "Taxi description cannot be longer than 255."],
       trim: true,
     },
 
@@ -55,30 +58,12 @@ const Schema = new mongoose.Schema(
 
     taxi_whatsapp: {
       type: String,
-      required: [true, "Taxi whatsapp number is required."],
       validate: [validator.isMobilePhone, "Invalid phone number."],
-      unique: true,
       trim: true,
     },
 
-    taxi_email: {
+    taxi_address: {
       type: String,
-      validate: [validator.isEmail, "Invalid email address."],
-      lowercase: true,
-      trim: true,
-    },
-
-    taxi_website: {
-      type: String,
-      validate: [validator.isURL, "Invalid website url."],
-      lowercase: true,
-      trim: true,
-    },
-
-    taxi_instagram: {
-      type: String,
-      validate: [validator.isURL, "Invalid instagram url."],
-      lowercase: true,
       trim: true,
     },
 
@@ -89,6 +74,10 @@ const Schema = new mongoose.Schema(
         trim: true,
       },
     ],
+
+    taxi_popularity: {
+      type: Number,
+    },
   },
   {
     toJSON: { virtuals: true },
