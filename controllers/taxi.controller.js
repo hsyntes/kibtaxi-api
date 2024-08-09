@@ -95,8 +95,6 @@ exports.getPopularTaxis = async function (req, res, next) {
       },
     ]);
 
-    console.log("taxis: ", taxis);
-
     Response.send(res, 200, "success", undefined, taxis.length, { taxis });
   } catch (e) {
     next(e);
