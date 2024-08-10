@@ -4,7 +4,12 @@ const Response = require("../utils/Response");
 
 // * API Health
 router.get("/", function (req, res, next) {
-  Response.send(res, 200, "success", "OK!");
+  try {
+    console.log("Connection to the server is successful.");
+    Response.send(res, 200, "success", "OK!");
+  } catch (e) {
+    console.error("Connection to the server is failed.");
+  }
 });
 
 // * API Endpoints
