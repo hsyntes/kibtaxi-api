@@ -39,6 +39,9 @@ exports.getTaxis = async function (req, res, next) {
         $sample: { size: countTaxiDocuments },
       },
       {
+        $project: { taxi_photos: 0 },
+      },
+      {
         $skip: (Number(page) - 1) * Number(limit),
       },
       {
@@ -89,6 +92,9 @@ exports.getPopularTaxis = async function (req, res, next) {
       },
       {
         $sample: { size: 3 },
+      },
+      {
+        $project: { taxi_photos: 0 },
       },
       {
         $sort: { taxi_popularity: -1 },
