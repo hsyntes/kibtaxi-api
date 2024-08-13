@@ -62,6 +62,7 @@ exports.getTaxis = async function (req, res, next) {
   }
 };
 
+// * GET all documents by filtering
 exports.getPopularTaxis = async function (req, res, next) {
   try {
     const { lat, long } = req.query;
