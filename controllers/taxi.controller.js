@@ -87,18 +87,18 @@ exports.getPopularTaxis = async function (req, res, next) {
             coordinates: [longitude, latitude],
           },
           distanceField: "distance",
-          maxDistance: 30000,
+          maxDistance: 50000,
           spherical: true,
         },
       },
       {
-        $sample: { size: 3 },
+        $sort: { taxi_popularity: -1 },
+      },
+      {
+        $limit: 3,
       },
       {
         $project: { taxi_photos: 0 },
-      },
-      {
-        $sort: { taxi_popularity: -1 },
       },
     ]);
 
