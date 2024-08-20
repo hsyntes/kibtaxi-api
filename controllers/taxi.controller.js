@@ -349,15 +349,18 @@ exports.deleteTaxi = async function (req, res, next) {
       Prefix: `taxis/${req.params.id}`,
     }).promise();
 
+    console.log("listObjectsV2: ", listObjectsV2);
+
     // ! Delete objects under specific AWS S3 Bucket
-    await S3.deleteObjects({
-      Bucket: process.env.AWS_BUCKET,
-      Delete: {
-        Objects: listObjectsV2.Contents.map((objectV2) => ({
-          Key: objectV2.Key,
-        })),
-      },
-    }).promise();
+    if (listObjectsV2.Contents.length !== 0)
+      await S3.deleteObjects({
+        Bucket: process.env.AWS_BUCKET,
+        Delete: {
+          Objects: listObjectsV2.Contents.map((objectV2) => ({
+            Key: objectV2.Key,
+          })),
+        },
+      }).promise();
 
     await Taxi.findByIdAndDelete(req.params.id);
 
