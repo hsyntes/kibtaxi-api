@@ -12,6 +12,7 @@ const {
   createTaxi,
   uploadTaxiProfile,
   uploadTaxiPhotos,
+  deleteTaxi,
 } = require("../../controllers/taxi.controller");
 
 // * Endpoint(s)
@@ -33,5 +34,6 @@ router.post(
 );
 
 router.patch("/update/:id", updateTaxi);
+router.delete("/delete/:id", deleteTaxi);
 
 module.exports = router;

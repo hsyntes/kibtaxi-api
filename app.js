@@ -23,7 +23,7 @@ app.use(cors({ origin: "*" }));
 
 // * API Limit
 const limit = expressRateLimit({
-  max: 100,
+  max: 1000,
   windowsMs: 60 * 60 * 1000,
   message: "Too mant requests!",
   standartHeaders: true,

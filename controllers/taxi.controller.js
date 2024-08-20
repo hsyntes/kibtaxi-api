@@ -324,3 +324,41 @@ exports.uploadTaxiPhotos = async function (req, res, next) {
     next(e);
   }
 };
+
+// * DELETE document by id
+exports.deleteTaxi = async function (req, res, next) {
+  try {
+    if (!req.params.id)
+      return next(
+        new AppError(
+          403,
+          "fail",
+          "Please specify which taxi do you want to delete."
+        )
+      );
+
+    const S3 = new AWS.S3();
+
+    // * Listing specific AWS S3 Bucket Objects
+    const listObjectsV2 = await S3.listObjectsV2({
+      Bucket: process.env.AWS_BUCKET,
+      Prefix: `taxis/${req.params.id}`,
+    }).promise();
+
+    // ! Delete objects under specific AWS S3 Bucket
+    await S3.deleteObjects({
+      Bucket: process.env.AWS_BUCKET,
+      Delete: {
+        Objects: listObjectsV2.Contents.map((objectV2) => ({
+          Key: objectV2.Key,
+        })),
+      },
+    }).promise();
+
+    await Taxi.findByIdAndDelete(req.params.id);
+
+    Response.send(res, 204);
+  } catch (e) {
+    next(e);
+  }
+};
