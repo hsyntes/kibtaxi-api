@@ -33,7 +33,7 @@ router.post(
   uploadTaxiPhotos
 );
 
-router.patch("/update/:id", updateTaxi);
+router.route("/update/:id").put(updateTaxi).patch(updateTaxi);
 router.delete("/delete/:id", deleteTaxi);
 
 module.exports = router;

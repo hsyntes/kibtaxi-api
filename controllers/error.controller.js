@@ -16,7 +16,14 @@ const validationError = (err) => {
 // ! 409: Duplicate Key
 const duplicateKeyError = (err) => {
   if (err.keyPattern.hasOwnProperty("taxi_name"))
-    return new AppError(409, "fail", "This taxi name has already taken.");
+    return new AppError(409, "fail", "This taxi name has already been taken.");
+
+  if (err.keyPattern.hasOwnProperty("taxi_username"))
+    return new AppError(
+      409,
+      "fail",
+      "This taxi username has already been taken."
+    );
 
   if (err.keyPattern.hasOwnProperty("taxi_phone"))
     return new AppError(409, "fail", "This phone number is already in use.");

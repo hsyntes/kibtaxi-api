@@ -4,6 +4,7 @@ const AWS = require("../aws.config");
 const { promisify } = require("util");
 const AppError = require("../errors/AppError");
 const Response = require("../utils/Response");
+const { calculateAverage } = require("../utils/helpers");
 
 // * GET all documents
 exports.getTaxis = async function (req, res, next) {
@@ -92,7 +93,7 @@ exports.getPopularTaxis = async function (req, res, next) {
         },
       },
       {
-        $sort: { taxi_popularity: -1 },
+        $sort: { "taxi_popularity.average": -1 },
       },
       {
         $limit: 3,
@@ -190,9 +191,12 @@ exports.updateTaxi = async function (req, res, next) {
       taxi_popularity,
     });
 
+    taxi.taxi_popularity.average = calculateAverage(taxi.taxi_popularity);
+    await taxi.save();
+
     if (!taxi.taxi_whatsapp) {
       taxi.taxi_whatsapp = taxi.taxi_phone;
-      await taxi.save({ validateBeforeSave: true });
+      await taxi.save();
     }
 
     Response.send(

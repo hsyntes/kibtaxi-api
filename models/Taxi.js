@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const { calculateAverage } = require("../utils/helpers");
 
 const Schema = new mongoose.Schema(
   {
@@ -76,7 +77,20 @@ const Schema = new mongoose.Schema(
     ],
 
     taxi_popularity: {
-      type: Number,
+      rating: {
+        type: Number,
+        min: [0, "Taxi rating cannot be less than 1 star."],
+        max: [5, "Taxi rating cannot be higher than 5 stars."],
+      },
+
+      voted: {
+        type: Number,
+      },
+
+      average: {
+        type: Number,
+        default: 0,
+      },
     },
   },
   {
@@ -88,6 +102,13 @@ const Schema = new mongoose.Schema(
 );
 
 Schema.index({ taxi_location: "2dsphere" });
+
+// * Document Middleware
+Schema.pre("save", function (next) {
+  this.taxi_popularity.average = calculateAverage(this.taxi_popularity);
+
+  next();
+});
 
 const Taxi = mongoose.model("Taxi", Schema);
 
