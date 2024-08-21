@@ -4,7 +4,8 @@
   "description": "The API for Kibtaxi Flutter Mobile Application",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon node app.js"
   },
   "author": "hsyntes",
   "license": "ISC",
