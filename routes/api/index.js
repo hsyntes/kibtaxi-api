@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { checkApiKey } = require("../controllers/general.controller");
+const { checkApiKey } = require("../../controllers/api/api.controller");
 
 router.use(checkApiKey);
 

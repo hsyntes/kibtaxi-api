@@ -12,7 +12,8 @@ const hpp = require("hpp");
 const xssClean = require("xss-clean");
 const http = require("http");
 const mongoose = require("mongoose");
-const routes = require("./routes");
+const routes = require("./routes/api");
+const errorController = require("./controllers/error/error.controller");
 
 // * Expres
 const app = express();
@@ -58,3 +59,6 @@ server.listen(process.env.PORT, () =>
 
 // * API Route(s)
 app.use("/api", routes);
+
+// ! Error Handling
+app.use(errorController);
