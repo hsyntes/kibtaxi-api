@@ -1,10 +1,9 @@
+const Response = require("../../utils/Response");
+
 module.exports = function (err, req, res, next) {
   console.error(err);
 
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
+  Response.send(res, err.statusCode, err.status, err.message);
 
   next();
 };

@@ -13,6 +13,7 @@ const xssClean = require("xss-clean");
 const http = require("http");
 const mongoose = require("mongoose");
 const routes = require("./routes/api");
+const AppError = require("./errors/AppError");
 const errorController = require("./controllers/error/error.controller");
 
 // * Expres
@@ -59,6 +60,23 @@ server.listen(process.env.PORT, () =>
 
 // * API Route(s)
 app.use("/api", routes);
+
+// ! Undefined API Route(s)
+app.all("*", (req, res, next) =>
+  next(new AppError(404, "fail", `Unkown API Route: ${req.originalUrl}`))
+);
+
+// ! Unhandled Rejection
+process.on("unhandledRejection", function (err) {
+  console.error(err.name, err.message);
+  server.close(() => process.exit(1));
+});
+
+// ! Uncaught Exception
+process.on("uncaughtException", function (err) {
+  console.error(err.name, err.message);
+  server.close(() => process.exit(1));
+});
 
 // ! Error Handling
 app.use(errorController);
