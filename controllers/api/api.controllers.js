@@ -11,3 +11,11 @@ exports.checkApiKey = function (req, res, next) {
     next(e);
   }
 };
+
+exports.checkApiKey = function (req, res, next) {
+  try {
+    Response.send(res, 200, "success", "OK");
+  } catch (e) {
+    next(e);
+  }
+};
