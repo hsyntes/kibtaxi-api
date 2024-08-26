@@ -1,27 +1,22 @@
 const HttpRequest = require("./HttpRequest");
 const AppError = require("../errors/AppError");
 
-exports.getTaxisFromPlacesAPI = async function (lat, long, next) {
-  try {
-    const taxis = await HttpRequest.post(":searchNearby", {
-      includedTypes: ["taxi_stand"],
-      maxResultCount: 20,
-      locationRestriction: {
-        circle: {
-          center: {
-            latitude: Number(lat),
-            longitude: Number(long),
-          },
-          radius: 30000,
+exports.getTaxisFromPlacesAPI = async function (lat, long) {
+  const taxis = await HttpRequest.post(":searchNearby", {
+    includedTypes: ["taxi_stand"],
+    maxResultCount: 20,
+    locationRestriction: {
+      circle: {
+        center: {
+          latitude: Number(lat),
+          longitude: Number(long),
         },
+        radius: 30000,
       },
-    });
+    },
+  });
 
-    return taxis.places;
-  } catch (e) {
-    console.error(e);
-    next(new AppError(500, "error", `Taxi data(s) couldn't fetch: ${e}`));
-  }
+  return taxis.places;
 };
 
 exports.getTaxiPhotos = (photos) =>
