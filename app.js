@@ -59,7 +59,7 @@ server.listen(process.env.PORT, "0.0.0.0", () =>
 })();
 
 // * API Route(s)
-app.use("/api", routes);
+app.use("/", routes);
 
 // ! Undefined API Route(s)
 app.all("*", (req, res, next) =>
