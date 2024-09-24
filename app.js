@@ -42,7 +42,7 @@ app.use(xssClean());
 // * Server
 const server = http.createServer(app);
 
-server.listen(process.env.PORT, () =>
+server.listen(process.env.PORT, "0.0.0.0", () =>
   console.log(
     `Server is started to listen HTTP requests on PORT ${process.env.PORT}`
   )
