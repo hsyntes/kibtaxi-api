@@ -11,6 +11,7 @@ exports.getTaxis = async function (req, res, next) {
     const { lat, long } = req.query;
 
     let taxisFromPlacesAPI;
+
     try {
       taxisFromPlacesAPI = await getTaxisFromPlacesAPI(lat, long);
 
