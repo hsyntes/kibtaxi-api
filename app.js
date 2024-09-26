@@ -12,7 +12,7 @@ const hpp = require("hpp");
 const xssClean = require("xss-clean");
 const http = require("http");
 const mongoose = require("mongoose");
-const routes = require("./routes/api");
+const routes = require("./routes/index.routes");
 const AppError = require("./errors/AppError");
 const errorController = require("./controllers/error/error.controller");
 

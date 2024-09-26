@@ -1,4 +1,4 @@
-const Response = require("../../utils/Response");
+const Response = require("../utils/Response");
 
 exports.checkApiKey = function (req, res, next) {
   try {
