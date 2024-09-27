@@ -66,6 +66,9 @@ exports.getTaxis = async function (req, res, next) {
       .sort((a, b) => b.taxi_popularity?.average - a.taxi_popularity?.average)
       .slice(0, 3);
 
+    console.log("Popular Taxis: ", popular_taxis);
+    console.log("Taxis: ", taxis);
+
     Response.send(res, 200, "success", undefined, taxis.length, {
       popular_taxis,
       taxis,
