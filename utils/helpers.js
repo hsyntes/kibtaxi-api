@@ -1,5 +1,4 @@
 const HttpRequest = require("./HttpRequest");
-const AppError = require("../errors/AppError");
 
 exports.getTaxisFromPlacesAPI = async function (lat, long) {
   const taxis = await HttpRequest.post(":searchNearby", {
@@ -33,7 +32,7 @@ exports.getTaxiReviews = (reviews) =>
   reviews.map((review) => ({
     reviewer_photo: review?.authorAttribution?.photoUri,
     reviewer_name: review?.authorAttribution?.displayName,
-    reviewer_rating: review?.rating,
+    reviewer_rating: Number(review?.rating),
     reviewer_review:
       review?.originalText?.languageCode === "tr"
         ? review.originalText
