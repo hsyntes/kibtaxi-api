@@ -9,7 +9,7 @@ const Response = require("../../utils/Response");
 
 exports.getTaxis = async function (req, res, next) {
   try {
-    const { lat, long } = req.query;
+    const { lat, long, pt } = req.query;
 
     let taxis = [];
 
@@ -111,7 +111,7 @@ exports.getTaxis = async function (req, res, next) {
         (a, b) =>
           (b.taxi_popularity?.average || 0) - (a.taxi_popularity?.average || 0)
       )
-      .slice(0, 3);
+      .slice(0, Number(pt) || 3);
 
     Response.send(res, 200, "success", undefined, taxis.length, {
       popular_taxis,
